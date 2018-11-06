@@ -52,7 +52,8 @@ Además UDP no espera asentimientos y TCP sí.
 
 * ¿Qué otros protocolos podemos ver en la jerarquı́a de protocolos?¿Cuales crees que son señal y cuales ruido? 
 Podemos ver protocolo: Ethernet, IP, SIP, RTP (H.261), DNS, HTTP, ICMP, ARP, STUN. Los protocolos que son señal
-(los protocolos que se utilizan para establecer la llamada): UDP,SIP, RTP; los protocolos que son ruido (son los que capturan la llamada o conexión): Ethernet, ARP, ICMP, IP, Data, STUN, ARP, DNS.
+(los protocolos que se utilizan para establecer la llamada): UDP,SIP, RTP; los protocolos que son ruido
+(son los que capturan la llamada o conexión): Ethernet, ARP, ICMP, IP, Data, STUN, ARP, DNS.
 
 4. Observa por encima el flujo de tramas en el menú de Statistics en IO Graphs. La captura que estamos viendo incluye
 desde la inicialización (registro) de la aplicación hasta su finalización, con una llamada entremedias.
@@ -94,7 +95,9 @@ He recibido la IP 37.134.194.77, que es la dirección IP de mi ordenador(Ubuntu)
 7. Hasta la trama 45 se puede observar una secuencia de tramas del
 protocolo STUN.
 * ¿Por qué se hace uso de este protocolo?
-El protocolo de red STUN es del tipo cliente/servidor que permite a los clientes encontrar sus direcciones públicas, el tipo de NAT del cual ellos están atrás y el puerto Internet asociado por el NAT con el puerto local específico. Además sirve para configurar comunicación UDP entre el cliente y el proveedor VOIP para así establecer una llamada. 
+El protocolo de red STUN es del tipo cliente/servidor que permite a los clientes encontrar sus direcciones públicas,
+el tipo de NAT del cual ellos están atrás y el puerto Internet asociado por el NAT con el puerto local específico. 
+Además sirve para configurar comunicación UDP entre el cliente y el proveedor VOIP para así establecer una llamada. 
 
 * ¿Podrı́as decir si estamos tras un NAT o no?
 Estamos tras un NAT porque nos cambia la dirección local, y estamos usando el protocolo STUN.
@@ -120,12 +123,19 @@ Las instrucciones SIP que entiende el UA (Allow) son: INVITE, ACK, OPTIONS, BYE,
 
 9. Fijémonos en las tramas siguientes a la número 46:
 * ¿Se registra con éxito en el primer intento?
+No, en el paquete 50 se puede ver un 401 Unauthorized.
+
 * ¿Cómo sabemos si el registro se ha realizado correctamente o no?
+Porque en el paquete 54 el servidor responde con un 200 ok.
+
 * ¿Podrı́as identificar las diferencias entre el primer intento y el
 segundo de registro? (fı́jate en el tamaño de los paquetes y mira
-a qué se debe el cambio)
+a qué se debe el cambio).
+En el primer intento hay 523 bytes, y en el segundo intento 712 bytes. La diferencia está en el número de identificación (nonce).
+
 * ¿Cuánto es el valor del tiempo de expiración de la sesión? Indica
 las unidades.
+El tiempo de expiración de la sesión es 3600 segundos, una hora.
 
 10. Una vez registrados, podemos efectuar una llamada. Vamos a probar
 con el servicio de eco de Ekiga que nos permite comprobar si nos
@@ -133,18 +143,35 @@ hemos conectado correctamente. El servicio de eco tiene la dirección
 sip:500@ekiga.net. Veamos el INVITE de cerca.
 * ¿Puede verse el nombre del que efectúa la llamada, ası́ como su
 dirección SIP?
+Sí, lo podemos encontrar en From: From: "Gregorio Robles" <sip:grex@ekiga.net>".
+
 * ¿Qué es lo que contiene el cuerpo de la trama? ¿En qué formato/protocolo está?
+Por un lado tiene mensajes en formato de audio 5002 RTP/AVP, y en formato de vídeo 5006 RTP/AVP. El protocolo es SDP.
+
 * ¿Tiene éxito el primer intento? ¿Cómo lo sabes?
+No, el servidor responde con un error, 407 Proxy Authentication Required.
+
 * ¿En qué se diferencia el segundo INVITE más abajo del primero?
 ¿A qué crees que se debe esto?
+Se diferencia en que el primer INVITE tiene 982 bytes, y el segundo INVITE tiene 1181 bytes. También se diferencia en la identificación (nonce), en el segundo INVITE aparecen los mensajes para que el proxy pueda establecer la conexión (llamada), proxy necesita que se autentifique y autorizarle.
 
 11. Una vez conectado, estudia el intercambio de tramas.
 * ¿Qué protocolo(s) se utiliza(n)? ¿Para qué sirven estos protocolos?
+Utilizan dos protocolos: RTP, H.261 y RTCP. RTP es un protocolo de nivel de aplicación utilizado para la transmisión de información en tiempo real, como por ejemplo audio y vídeo en una videoconferencia. El protocolo H.261 es un codificador y comprime audio y vídeo. Y por último el protocolo RTCP envía datos de control entre el cliente-servidor cada cinco segunos aproximadamente.
+
 * ¿Cuál es el tamaño de paquete de los mismos?
+El tamaño de los paquetes del protocolo H.261 son variados: 1028 bytes, 1073 bytes, 1037 bytes, 1077 bytes), y de RTP son 214 bytes cada uno.
+
 * ¿Se utilizan bits de padding?
+No, si observamos las cabeceras de cada paquete (que está utilizando SDP) el Padding está en False, por lo que no hay relleno.
+
 * ¿Cuál es la periodicidad de los paquetes (en origen; nota que la
 captura es en destino)?
+La periodicidad se puede observar en el campo Payload type, que es 8kHz. El Timestamp cuando hay un segundo es de 8000 bytes, y en el siguiente el Timestamp es de 160 bytes, con regla de tres lo pasamos a segundos y son 0.02 segundos.
+
 * ¿Cuántos bits/segundo se envı́an?
+Hay que pasar los 8kHz a bits, como 1 byte = 8 bits, tendremos 64Kbits/s.
+
 [Al terminar el ejercicio es recomendable hacer commit de los ficheros modificados]
 
 12. Vamos a ver más a fondo el intercambio RTP. En Telephony hay una
