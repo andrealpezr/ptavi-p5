@@ -258,14 +258,14 @@ Ekiga para ver todo el proceso3 .
 19. Observa las diferencias en el inicio de la conversación entre el entorno
 del laboratorio y el del ejercicio anterior4 :
 * ¿Se utilizan DNS y STUN? ¿Por qué?
-Si anteriormente no has llamado sí que necesitas. Yo he llamado antes entonces tenemos la IP y no necesitaría llamar al DNS. STUN siempre se suele utilizar para saber si estamos detrás de NAT.
+N necesitaría llamar al DNS porque estoy con mi ip pública. STUN siempre se suele utilizar para saber si estamos detrás de NAT.
 
 * ¿Son diferentes el registro y la descripción de la sesión?
-Sí, el REGISTER aparece en la cabecera, y la descripción de la sesión aparece en el cuerpo del mensaje.
+Sí, tienen características similares, pero el REGISTER aparece en la cabecera, y la descripción de la sesión aparece en el cuerpo del mensaje.
 
 20. Identifica las diferencias existentes entre esta conversación y la conversación anterior:
 * ¿Cuántos flujos tenemos?
-Habrá dos flujos por cada usuario de la llamada, uno de audio y otro de vídeo, por tanto, 4 flujos.
+Habrá dos flujos, uno de audio por cada usuario de la llamada.
 
 * ¿Cuál es su periodicidad?
 
